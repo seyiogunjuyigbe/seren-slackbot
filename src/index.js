@@ -16,6 +16,7 @@ const bot = new App({
   signingSecret: SIGNING_SECRET,
   token: OAUTH_TOKEN,
   receiver: expressReceiver
+
 });
 bot.event("app_mention", async ({ context, event }) => {
 
@@ -59,6 +60,9 @@ app.get('/', (req, res) => {
     message: 'Hello World',
   });
 });
+app.post('/slack/events', (req, res) => {
+  console.log(req.body)
+})
 app.all('*', (req, res) => {
   return res.status(404).json({
     error: true,
