@@ -38,7 +38,7 @@ app.use(
 // log every request to the console
 app.use(morgan('dev'));
 
-app.use(routes);
+// app.use(routes);
 app.get('/', (req, res) => {
   return res.status(200).json({
     success: true,
