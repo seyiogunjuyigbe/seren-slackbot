@@ -17,6 +17,20 @@ const bot = new App({
   token: OAUTH_TOKEN,
   receiver: expressReceiver
 });
+bot.event("app_mention", async ({ context, event }) => {
+
+  try {
+    await bot.client.chat.postMessage({
+      token: context.botToken,
+      channel: event.channel,
+      text: `Hey yoo <@${event.user}> you mentioned me`
+    });
+  }
+  catch (e) {
+    console.log(`error responding ${e}`);
+  }
+
+});
 const app = expressReceiver.app;
 const routes = require('./routes');
 new DB().connect(DB_URL);
