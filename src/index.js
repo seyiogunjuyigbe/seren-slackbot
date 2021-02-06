@@ -2,10 +2,11 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
+const { App } = require('@slack/bolt');
 
 const app = express();
 const DB = require('./database');
-const { DB_URL, PORT } = require('./config/config');
+const { DB_URL, PORT, SIGNING_SECRET, OAUTH_TOKEN } = require('./config/config');
 
 // const routes = require('./routes');
 new DB().connect(DB_URL);
@@ -46,4 +47,14 @@ app.use((err, req, res) => {
 });
 const port = process.env.port || PORT || 3000;
 
-app.listen(port, () => console.log(`API listening on port ${port}`));
+const bot = new App({
+  signingSecret: SIGNING_SECRET,
+  token: OAUTH_TOKEN,
+});
+
+(async () => {
+  await bot.start(app.listen(port, () => console.log(`API listening on port ${port}`)));
+
+  console.log('Slackbot is running!');
+})();
+;
