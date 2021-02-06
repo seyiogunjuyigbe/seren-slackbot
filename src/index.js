@@ -1,14 +1,23 @@
-const express = require('express');
+// const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
-const { App } = require('@slack/bolt');
+const { App, ExpressReceiver } = require('@slack/bolt');
 
-const app = express();
 const DB = require('./database');
 const { DB_URL, PORT, SIGNING_SECRET, OAUTH_TOKEN } = require('./config/config');
 
-// const routes = require('./routes');
+const bot = new App({
+  signingSecret: SIGNING_SECRET,
+  token: OAUTH_TOKEN,
+});
+const expressReceiver = new ExpressReceiver({
+  signingSecret: SIGNING_SECRET,
+  endpoints: '/slack/events'
+});
+
+const app = expressReceiver.app;
+const routes = require('./routes');
 new DB().connect(DB_URL);
 
 app.use(cors());
@@ -28,8 +37,13 @@ app.use(
 // log every request to the console
 app.use(morgan('dev'));
 
-// app.use('/api/', routes);
-
+app.use('/api/', routes);
+app.get('/', (req, res) => {
+  return res.status(200).json({
+    success: true,
+    message: 'Hello World',
+  });
+});
 app.all('*', (req, res) => {
   return res.status(404).json({
     error: true,
@@ -47,13 +61,10 @@ app.use((err, req, res) => {
 });
 const port = process.env.port || PORT || 3000;
 
-const bot = new App({
-  signingSecret: SIGNING_SECRET,
-  token: OAUTH_TOKEN,
-});
+
 
 (async () => {
-  await bot.start(app.listen(port, () => console.log(`API listening on port ${port}`)));
+  await bot.start(port);
 
   console.log('Slackbot is running!');
 })();
