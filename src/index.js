@@ -7,15 +7,16 @@ const { App, ExpressReceiver } = require('@slack/bolt');
 const DB = require('./database');
 const { DB_URL, PORT, SIGNING_SECRET, OAUTH_TOKEN } = require('./config/config');
 
-const bot = new App({
-  signingSecret: SIGNING_SECRET,
-  token: OAUTH_TOKEN,
-});
+
 const expressReceiver = new ExpressReceiver({
   signingSecret: SIGNING_SECRET,
   endpoints: '/slack/events'
 });
-
+const bot = new App({
+  signingSecret: SIGNING_SECRET,
+  token: OAUTH_TOKEN,
+  receiver: expressReceiver
+});
 const app = expressReceiver.app;
 const routes = require('./routes');
 new DB().connect(DB_URL);
