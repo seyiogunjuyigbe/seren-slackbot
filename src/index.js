@@ -1,90 +1,44 @@
-// const express = require('express');
-const cors = require('cors');
-const morgan = require('morgan');
-const bodyParser = require('body-parser');
-const { App, ExpressReceiver } = require('@slack/bolt');
+const app = require('express')();
+const { createServer } = require('http');
+const { createEventAdapter } = require('@slack/events-api');
 
-const DB = require('./database');
-const { DB_URL, PORT, SIGNING_SECRET, OAUTH_TOKEN } = require('./config/config');
+const { DB_URL, PORT, SIGNING_SECRET, OAUTH_TOKEN, BOT_USER_TOKEN } = require('./config/config');
+const slackEvents = createEventAdapter(SIGNING_SECRET);
+
+const port = process.env.PORT || PORT || 3000;
+
+app.use('/slack/events', slackEvents.expressMiddleware());
+// Create a plain http server, and then attach the event adapter as a request listener
 
 
-const expressReceiver = new ExpressReceiver({
-  signingSecret: SIGNING_SECRET,
-  endpoints: '/slack/events'
-});
-const bot = new App({
-  signingSecret: SIGNING_SECRET,
-  token: OAUTH_TOKEN,
-  receiver: expressReceiver
+createServer(slackEvents.requestListener());
 
-});
-bot.event("app_mention", async ({ context, event }) => {
-
-  try {
-    await bot.client.chat.postMessage({
-      token: context.botToken,
-      channel: event.channel,
-      text: `Hey yoo <@${event.user}> you mentioned me`
-    });
-  }
-  catch (e) {
-    console.log(`error responding ${e}`);
-  }
-
-});
-const app = expressReceiver.app;
-const routes = require('./routes');
-new DB().connect(DB_URL);
-
-app.use(cors());
-app.use(
-  bodyParser.json({
-    limit: '5mb',
-    type: 'application/json',
-  })
-);
-app.use(
-  bodyParser.urlencoded({
-    limit: '5mb',
-    extended: true,
-  })
-);
-
-// log every request to the console
-app.use(morgan('dev'));
-
-// app.use(routes);
-app.get('/', (req, res) => {
-  return res.status(200).json({
-    success: true,
-    message: 'Hello World',
-  });
-});
-app.post('/slack/events', (req, res) => {
-  console.log(req.body)
-})
-app.all('*', (req, res) => {
-  return res.status(404).json({
-    error: true,
-    message: 'Requested route not found',
-  });
+// Attach listeners to events by Slack Event "type". See: https://api.slack.com/events/message.im
+slackEvents.on('message', (event) => {
+  console.log(`Received a message event: user ${event.user} in channel ${event.channel} says ${event.text}`);
 });
 
-// error handling middleware
-app.use((err, req, res) => {
-  console.error(err.stack || err.message || err);
-  res.status(500).json({
-    error: true,
-    message: err.stack || err.message || err,
-  });
-});
-const port = process.env.port || PORT || 3000;
+// Handle errors (see `errorCodes` export)
+slackEvents.on('error', console.error);
 
 
+const { WebClient } = require('@slack/web-api');
+// Create a new instance of the WebClient class with the token read from your environment variable
+const web = new WebClient(BOT_USER_TOKEN);
+// The current date
+const currentTime = new Date().toTimeString();
 
 (async () => {
-  await bot.start(port);
 
-  console.log('Slackbot is running!');
+  try {
+    // Use the `chat.postMessage` method to send a message from this app
+    await web.chat.postMessage({
+      channel: '#general',
+      text: `The current time is ${currentTime}`,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+
+  console.log('Message posted!');
 })();
-;
