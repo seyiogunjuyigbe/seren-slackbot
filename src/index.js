@@ -45,7 +45,22 @@ slackEvents.on('app_mention', async (event) => {
   } catch (error) {
     console.log(error);
   }
-  console.log({ event })
+  console.log({ event, block: event.blocks })
+
+});
+
+slackEvents.on('message.app_home', async (event) => {
+  console.log(`Received a mention event`);
+  try {
+    // Use the `chat.postMessage` method to send a message from this app
+    await web.chat.postMessage({
+      channel: event.channel,
+      text: `Hey ${event.user} you buzzed me`,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+  console.log({ event, block: event.blocks })
 });
 (async () => {
   const server = await slackEvents.start(app.listen(port));
