@@ -1,25 +1,36 @@
-const app = require('express')();
-const { createServer } = require('http');
-const { createEventAdapter } = require('@slack/events-api');
 
 const { DB_URL, PORT, SIGNING_SECRET, OAUTH_TOKEN, BOT_USER_TOKEN } = require('./config/config');
+const express = require('express');
+const bodyParser = require('body-parser');
+const { createEventAdapter } = require('@slack/events-api');
+const port = process.env.PORT || PORT || 3000;
 const slackEvents = createEventAdapter(SIGNING_SECRET);
 
-const port = process.env.PORT || PORT || 3000;
+// Create an express application
+const app = express();
 
-app.use('/slack/events', slackEvents.expressMiddleware());
-// Create a plain http server, and then attach the event adapter as a request listener
+// Plug the adapter in as a middleware
+app.use('/slack/events', slackEvents.requestListener());
+app.use(
+  bodyParser.json({
+    limit: '5mb',
+    type: 'application/json',
+  })
+);
+app.use(
+  bodyParser.urlencoded({
+    limit: '5mb',
+    extended: true,
+  })
+);
+app.post("/slack/events", (req, res) => {
+  console.log(req.body);
 
+})
 
-createServer(slackEvents.requestListener());
-
-// Attach listeners to events by Slack Event "type". See: https://api.slack.com/events/message.im
-slackEvents.on('message', (event) => {
-  console.log(`Received a message event: user ${event.user} in channel ${event.channel} says ${event.text}`);
+app.listen(port, () => {
+  console.log(`Listening for events on ${port}`);
 });
-
-// Handle errors (see `errorCodes` export)
-slackEvents.on('error', console.error);
 
 
 const { WebClient } = require('@slack/web-api');
