@@ -6,7 +6,7 @@ const { createMessageAdapter } = require("@slack/interactive-messages")
 const { WebClient } = require('@slack/web-api');
 const { DB_URL, PORT, SIGNING_SECRET, OAUTH_TOKEN, BOT_USER_TOKEN } = require('./config/config');
 const port = process.env.PORT || PORT || 3000;
-const port2 = process.env.PORT || 4000;
+const port2 = 4000;
 
 const web = new WebClient(BOT_USER_TOKEN);
 const slackEvents = createEventAdapter(SIGNING_SECRET);
@@ -125,6 +125,6 @@ slackEvents.on('message.im', async (event) => {
   const server2 = await slackInteractions.start(port2);
 
   console.log(`Listening for events on ${server.address().port}`);
-  console.log(`Listening for events on ${server2.address().port2}`);
+  console.log(`Listening for interactive messages on ${server2.address().port}`);
 
 })();
