@@ -27,10 +27,21 @@ app.post("/slack/events", (req, res) => {
   console.log(req.body);
 
 })
-
-app.listen(port, () => {
-  console.log(`Listening for events on ${port}`);
+slackEvents.on('message', (event) => {
+  console.log(`Received a message event: user ${event.user} in channel ${event.channel} says ${event.text}`);
+  console.log({ event })
 });
+slackEvents.on('app_mention', (event) => {
+  console.log(`Received a mention event`);
+
+  console.log({ event })
+});
+(async () => {
+  const server = await slackEvents.start(app.listen(port));
+  console.log(`Listening for events on ${server.address().port}`);
+})();
+
+
 
 
 const { WebClient } = require('@slack/web-api');
