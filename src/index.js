@@ -121,7 +121,8 @@ slackEvents.on('message.im', async (event) => {
 
 });
 app.post("/callback", (req, res) => {
-  console.log(req.body)
+  console.log(req.body);
+  res.end;
 })
   (async () => {
     const server = await slackEvents.start(app.listen(port));
