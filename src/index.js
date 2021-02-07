@@ -6,6 +6,7 @@ const { createMessageAdapter } = require("@slack/interactive-messages")
 const { WebClient } = require('@slack/web-api');
 const { DB_URL, PORT, SIGNING_SECRET, OAUTH_TOKEN, BOT_USER_TOKEN } = require('./config/config');
 const port = process.env.PORT || PORT || 3000;
+const port2 = process.env.PORT || 4000;
 
 const web = new WebClient(BOT_USER_TOKEN);
 const slackEvents = createEventAdapter(SIGNING_SECRET);
@@ -114,14 +115,16 @@ slackEvents.on('app_mention', async (event) => {
   }
 });
 
-slackEvents.on('message.app_home', async (event) => {
+slackEvents.on('message.im', async (event) => {
   console.log(`Received a DM event`);
   console.log({ event, block: event.blocks })
 
 });
 (async () => {
   const server = await slackEvents.start(app.listen(port));
-  // await slackInteractions.start();
+  const server2 = await slackInteractions.start(port2);
 
   console.log(`Listening for events on ${server.address().port}`);
+  console.log(`Listening for events on ${server2.address().port2}`);
+
 })();
