@@ -38,67 +38,52 @@ slackEvents.on('app_mention', async (event) => {
   try {
     // Use the `chat.postMessage` method to send a message from this app
 
-    await web.chat.postMessage({
+    let msg = await web.chat.postMessage({
       channel: event.channel,
-      text: `Hey <@${event.user}> you buzzed me`,
-      "blocks": [
+      blocks: [
         {
           "type": "header",
           "text": {
             "type": "plain_text",
-            "text": "New request",
+            "text": `Welcome <@${event.user}>. How are you doing?`,
             "emoji": true
           }
-        },
-        {
-          "type": "section",
-          "fields": [
-            {
-              "type": "mrkdwn",
-              "text": "*Type:*\nPaid Time Off"
-            },
-            {
-              "type": "mrkdwn",
-              "text": "*Created by:*\n<example.com|Fred Enriquez>"
-            }
-          ]
-        },
-        {
-          "type": "section",
-          "fields": [
-            {
-              "type": "mrkdwn",
-              "text": "*When:*\nAug 10 - Aug 13"
-            }
-          ]
         },
         {
           "type": "actions",
           "elements": [
             {
-              "type": "button",
-              "text": {
-                "type": "plain_text",
-                "emoji": true,
-                "text": "Approve"
-              },
-              "style": "primary",
-              "value": "click_me_123"
-            },
-            {
-              "type": "button",
-              "text": {
-                "type": "plain_text",
-                "emoji": true,
-                "text": "Reject"
-              },
-              "style": "danger",
-              "value": "click_me_123"
+              "type": "static_select",
+              "options": [
+                {
+                  "text": {
+                    "type": "plain_text",
+                    "text": "Doing Well"
+                  },
+                  "value": "doing-well"
+                },
+                {
+                  "text": {
+                    "type": "plain_text",
+                    "text": "Neutral"
+                  },
+                  "value": "neutral"
+                },
+                {
+                  "text": {
+                    "type": "plain_text",
+                    "text": "Feeling Lucky"
+                  },
+                  "value": "lucky"
+                }
+              ]
             }
           ]
         }
       ]
     });
+
+    console.log({ msg })
     let dialog = await web.dialog.open({
       "callback_id": "ryde-46e2b0",
       "title": "Request a Ride",
@@ -106,16 +91,44 @@ slackEvents.on('app_mention', async (event) => {
       "state": "Limo",
       "elements": [
         {
-          "type": "text",
-          "label": "Pickup Location",
-          "name": "loc_origin"
-        },
-        {
-          "type": "text",
-          "label": "Dropoff Location",
-          "name": "loc_destination"
+          "type": "static_select",
+          "options": [
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "Doing Well"
+              },
+              "value": "doing-well"
+            },
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "Neutral"
+              },
+              "value": "neutral"
+            },
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "Feeling Lucky"
+              },
+              "value": "lucky"
+            }
+          ]
         }
       ]
+      // "elements": [
+      //   {
+      //     "type": "text",
+      //     "label": "Pickup Location",
+      //     "name": "loc_origin"
+      //   },
+      //   {
+      //     "type": "text",
+      //     "label": "Dropoff Location",
+      //     "name": "loc_destination"
+      //   }
+      // ]
     })
     console.log({ dialog })
   } catch (error) {
