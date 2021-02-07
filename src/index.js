@@ -26,19 +26,29 @@ app.use(
   })
 );
 app.post("/slack/events", (req, res) => {
-  console.log(req.body);
+  console.log("req.body", req);
+  slackInteractions.action({ type: 'static_select' }, (payload, respond) => {
+    // Logs the contents of the action to the console
+    console.log('payload', payload);
 
+    // Send an additional message to the whole channel
+    // doWork()
+    //   .then(() => {
+    //     respond({ text: 'Thanks for your submission.' });
+    //   })
+    //   .catch((error) => {
+    //     respond({ text: 'Sorry, there\'s been an error. Try again later.' });
+    //   });
+
+    // If you'd like to replace the original message, use `chat.update`.
+    // Not returning any value.
+  });
 })
-// slackEvents.on('message', (event) => {
-//   console.log(`Received a message event: user ${event.user} in channel ${event.channel} says ${event.text}`);
-//   console.log({ event })
-// });
+
 slackEvents.on('app_mention', async (event) => {
   console.log(`Received a mention event`);
   try {
-    // Use the `chat.postMessage` method to send a message from this app
-
-    let msg = await web.chat.postMessage({
+    await web.chat.postMessage({
       channel: event.channel,
       blocks: [
         {
@@ -82,75 +92,32 @@ slackEvents.on('app_mention', async (event) => {
         }
       ]
     });
+    slackInteractions.action({ type: 'static_select' }, (payload, respond) => {
+      // Logs the contents of the action to the console
+      console.log('payload', payload);
 
-    console.log({ msg })
-    let dialog = await web.dialog.open({
-      "callback_id": "ryde-46e2b0",
-      "title": "Request a Ride",
-      "submit_label": "Request",
-      "state": "Limo",
-      "elements": [
-        {
-          "type": "static_select",
-          "options": [
-            {
-              "text": {
-                "type": "plain_text",
-                "text": "Doing Well"
-              },
-              "value": "doing-well"
-            },
-            {
-              "text": {
-                "type": "plain_text",
-                "text": "Neutral"
-              },
-              "value": "neutral"
-            },
-            {
-              "text": {
-                "type": "plain_text",
-                "text": "Feeling Lucky"
-              },
-              "value": "lucky"
-            }
-          ]
-        }
-      ]
-      // "elements": [
-      //   {
-      //     "type": "text",
-      //     "label": "Pickup Location",
-      //     "name": "loc_origin"
-      //   },
-      //   {
-      //     "type": "text",
-      //     "label": "Dropoff Location",
-      //     "name": "loc_destination"
-      //   }
-      // ]
-    })
-    console.log({ dialog })
+      // Send an additional message to the whole channel
+      // doWork()
+      //   .then(() => {
+      //     respond({ text: 'Thanks for your submission.' });
+      //   })
+      //   .catch((error) => {
+      //     respond({ text: 'Sorry, there\'s been an error. Try again later.' });
+      //   });
+
+      // If you'd like to replace the original message, use `chat.update`.
+      // Not returning any value.
+    });
+
   } catch (error) {
     console.log(error);
   }
-  console.log({ event, block: event.blocks })
-
 });
 
 slackEvents.on('message.app_home', async (event) => {
-  console.log(`Received a mention event`);
+  console.log(`Received a DM event`);
   console.log({ event, block: event.blocks })
 
-  try {
-    // Use the `chat.postMessage` method to send a message from this app
-    await web.chat.postMessage({
-      channel: event.channel,
-      text: `Hey <@${event.user}> you buzzed me`,
-    });
-  } catch (error) {
-    console.log(error);
-  }
 });
 (async () => {
   const server = await slackEvents.start(app.listen(port));
