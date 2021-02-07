@@ -41,18 +41,83 @@ slackEvents.on('app_mention', async (event) => {
     await web.chat.postMessage({
       channel: event.channel,
       text: `Hey <@${event.user}> you buzzed me`,
+      "blocks": [
+        {
+          "type": "header",
+          "text": {
+            "type": "plain_text",
+            "text": "New request",
+            "emoji": true
+          }
+        },
+        {
+          "type": "section",
+          "fields": [
+            {
+              "type": "mrkdwn",
+              "text": "*Type:*\nPaid Time Off"
+            },
+            {
+              "type": "mrkdwn",
+              "text": "*Created by:*\n<example.com|Fred Enriquez>"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "fields": [
+            {
+              "type": "mrkdwn",
+              "text": "*When:*\nAug 10 - Aug 13"
+            }
+          ]
+        },
+        {
+          "type": "actions",
+          "elements": [
+            {
+              "type": "button",
+              "text": {
+                "type": "plain_text",
+                "emoji": true,
+                "text": "Approve"
+              },
+              "style": "primary",
+              "value": "click_me_123"
+            },
+            {
+              "type": "button",
+              "text": {
+                "type": "plain_text",
+                "emoji": true,
+                "text": "Reject"
+              },
+              "style": "danger",
+              "value": "click_me_123"
+            }
+          ]
+        }
+      ]
     });
-    slackInteractions.action('welcome_button', (payload, respond) => {
-      console.log({ payload, responsd });
-      respond({
-        text: 'Success!',
-      });
-
-      return {
-        text: 'Processing...',
-      }
-    });
-
+    let dialog = await web.dialog.open({
+      "callback_id": "ryde-46e2b0",
+      "title": "Request a Ride",
+      "submit_label": "Request",
+      "state": "Limo",
+      "elements": [
+        {
+          "type": "text",
+          "label": "Pickup Location",
+          "name": "loc_origin"
+        },
+        {
+          "type": "text",
+          "label": "Dropoff Location",
+          "name": "loc_destination"
+        }
+      ]
+    })
+    console.log({ dialog })
   } catch (error) {
     console.log(error);
   }
@@ -76,5 +141,7 @@ slackEvents.on('message.app_home', async (event) => {
 });
 (async () => {
   const server = await slackEvents.start(app.listen(port));
+  // await slackInteractions.start();
+
   console.log(`Listening for events on ${server.address().port}`);
 })();
