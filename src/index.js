@@ -120,11 +120,14 @@ slackEvents.on('message.im', async (event) => {
   console.log({ event, block: event.blocks })
 
 });
-(async () => {
-  const server = await slackEvents.start(app.listen(port));
-  const server2 = await slackInteractions.start(port2);
+app.post("/callback", (req, res) => {
+  console.log(req.body)
+})
+  (async () => {
+    const server = await slackEvents.start(app.listen(port));
+    const server2 = await slackInteractions.start(port2);
 
-  console.log(`Listening for events on ${server.address().port}`);
-  console.log(`Listening for interactive messages on ${server2.address().port}`);
+    console.log(`Listening for events on ${server.address().port}`);
+    console.log(`Listening for interactive messages on ${server2.address().port}`);
 
-})();
+  })();
