@@ -14,6 +14,7 @@ const slackInteractions = createMessageAdapter(SIGNING_SECRET);
 const app = express();
 
 app.use('/slack/events', slackEvents.requestListener());
+app.use("/callback", slackInteractions.requestListener())
 app.use(
   bodyParser.json({
     limit: '5mb',
@@ -27,9 +28,14 @@ app.use(
   })
 );
 
-app.post("/callback", function (req, res) {
-  console.log({ req });
-  return
+app.use(function (req, res, next) {
+  console.log({
+    body: req.body,
+    query: req.query,
+    params: req.params,
+    headers: req.headers
+  })
+  next()
 })
 slackEvents.on('app_mention', async (event) => {
   console.log(`Received a mention event`);
