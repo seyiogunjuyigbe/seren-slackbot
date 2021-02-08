@@ -5,6 +5,7 @@ const { createEventAdapter } = require('@slack/events-api');
 const { createMessageAdapter } = require("@slack/interactive-messages")
 const { WebClient } = require('@slack/web-api');
 const { DB_URL, PORT, SIGNING_SECRET, OAUTH_TOKEN, BOT_USER_TOKEN } = require('./config/config');
+const { createServer } = require("http")
 const port = process.env.PORT || PORT || 3000;
 const port2 = 4000;
 
@@ -105,18 +106,31 @@ slackEvents.on('app_mention', async (event) => {
     console.log(error);
   }
 });
-
+app.post("/callback", (req, res) => {
+  res.json(req.body)
+})
+app.post("/slack/events", (req, res) => {
+  res.json(req.body)
+})
 slackEvents.on('message.im', async (event) => {
   console.log(`Received a DM event`);
   console.log({ event, block: event.blocks })
 
 });
+app.set('port', port);
 
-(async () => {
-  const server = await slackEvents.start(app.listen(port));
-  const server2 = await slackInteractions.start(port2);
+// (async () => {
+//   const server = await slackEvents.start(app.listen(port));
+//   const server2 = await slackInteractions.start(port2);
 
+//   console.log(`Listening for events on ${server.address().port}`);
+//   console.log(`Listening for interactive messages on ${server2.address().port}`);
+
+// })();
+const server = createServer(app);
+createServer(slackInteractions.requestListener());
+createServer(slackEvents.requestListener())
+server.listen(port, () => {
+  // Log a message when the server is ready
   console.log(`Listening for events on ${server.address().port}`);
-  console.log(`Listening for interactive messages on ${server2.address().port}`);
-
-})();
+});
