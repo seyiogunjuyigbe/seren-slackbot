@@ -96,7 +96,7 @@ slackEvents.on('app_mention', async (event) => {
           username: payload.user.username,
           how_are_you_doing: payload.actions[0].selected_option.value
         })
-        await respond("Ok gotten")
+        // await respond("Ok gotten")
         let result = await web.dialog.open({
           trigger_id: "qwertyuio",
           title: "How are you feeling today?",
