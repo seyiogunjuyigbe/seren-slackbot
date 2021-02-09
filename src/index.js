@@ -5,15 +5,19 @@ const { createEventAdapter } = require('@slack/events-api');
 const { createMessageAdapter } = require("@slack/interactive-messages")
 const { WebClient } = require('@slack/web-api');
 const { DB_URL, PORT, SIGNING_SECRET, OAUTH_TOKEN, BOT_USER_TOKEN } = require('./config/config');
-const { createServer } = require("http")
+const { createServer } = require("http");
+const Response = require("./models/response")
+const app = express();
+const DB = require("./database")
 const port = process.env.PORT || PORT || 3000;
-const port2 = 4000;
+new DB().connect(DB_URL);
 
 const web = new WebClient(BOT_USER_TOKEN);
 const slackEvents = createEventAdapter(SIGNING_SECRET);
 const slackInteractions = createMessageAdapter(SIGNING_SECRET);
-const app = express();
 
+
+app.use(require("./routes"))
 app.use('/slack/events', slackEvents.requestListener());
 app.use("/callback", slackInteractions.requestListener())
 app.use(
@@ -28,16 +32,14 @@ app.use(
     extended: true,
   })
 );
-
-app.use(function (req, res, next) {
-  console.log({
-    body: req.body,
-    query: req.query,
-    params: req.params,
-    headers: req.headers
+app.all("*", (req, res) => {
+  return res.status(404).json({
+    message: "requested route not found",
+    data: null
   })
-  next()
 })
+
+// event listeners
 slackEvents.on('app_mention', async (event) => {
   console.log(`Received a mention event`);
   try {
@@ -85,21 +87,24 @@ slackEvents.on('app_mention', async (event) => {
         }
       ]
     });
-    slackInteractions.action({ type: 'static_select' }, (payload, respond) => {
-      console.log('new payload', payload);
+    slackInteractions.action({ type: 'static_select' }, async (payload, respond) => {
+      console.log({ payload, respond })
+      try {
+        let newResponse = await Response.create({
+          username: payload.user.username,
+          how_are_you_doing: payload.actions[0].selected_option
+        })
+        console.log({ newResponse })
+      } catch (err) {
+        console.log({ err })
+      }
     });
 
   } catch (error) {
     console.log(error);
   }
 });
-app.post("/callback", (req, res) => {
-  console.log({ body })
-  res.json(req.body)
-})
-app.post("/slack/events", (req, res) => {
-  res.json(req.body)
-})
+
 slackEvents.on('message.im', async (event) => {
   console.log(`Received a DM event`);
   console.log({ event, block: event.blocks })

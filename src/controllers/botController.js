@@ -1,11 +1,31 @@
-const { success, error } = require("../middlewares/response")
-
+const sendApiResponse = require("../middlewares/response")
+const { find, findOne } = require("../utils/query");
+const Response = require("../models/response")
 module.exports = {
-    async eventCallback(req, res) {
+    async fetchResponses(req, res) {
         try {
-            return success(res, 200, null)
+            let userResponses = await find(Response, req);
+            return sendApiResponse(
+                res,
+                200,
+                "user responses fetched successfully",
+                userResponses
+            )
         } catch (err) {
-            return error(res, 500, err.message)
+            return sendApiResponse(res, 500, err.message)
+        }
+    },
+    async fetchSingleResponse(req, res) {
+        try {
+            let userResponse = await findOne(Response, req);
+            return sendApiResponse(
+                res,
+                200,
+                "user response fetched successfully",
+                userResponse
+            )
+        } catch (err) {
+            return sendApiResponse(res, 500, err.message)
         }
     }
 }

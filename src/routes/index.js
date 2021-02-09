@@ -1,5 +1,7 @@
 const router = require("express").Router();
-const slackRoutes = require("./slackRoutes");
+const Bot = require("../controllers/botController");
 
-router.use("/slack", slackRoutes)
+router.get("/responses", Bot.fetchResponses);
+router.get("/responses/:responseId", Bot.fetchSingleResponse);
+
 module.exports = router;

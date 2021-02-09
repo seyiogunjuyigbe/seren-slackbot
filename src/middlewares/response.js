@@ -1,16 +1,7 @@
-module.exports = {
-  success(res, status, data) {
-    return res.status(status).json({
-      status,
-      data,
-    });
-  },
+module.exports = function (res, status, message, data = null) {
+  return res.status(status).json({
+    message,
+    data,
+  });
+}
 
-  error(res, status, message) {
-    console.log({ err: message });
-    return res.status(status).json({
-      status,
-      message,
-    });
-  },
-};
