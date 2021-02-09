@@ -66,7 +66,7 @@ slackEvents.on('app_mention', async (event) => {
                     "type": "plain_text",
                     "text": "Doing Well"
                   },
-                  "value": "doing-well"
+                  "value": "doing well"
                 },
                 {
                   "text": {
@@ -80,7 +80,7 @@ slackEvents.on('app_mention', async (event) => {
                     "type": "plain_text",
                     "text": "Feeling Lucky"
                   },
-                  "value": "lucky"
+                  "value": "feeling lucky"
                 }
               ]
             }
