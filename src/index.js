@@ -86,20 +86,7 @@ slackEvents.on('app_mention', async (event) => {
       ]
     });
     slackInteractions.action({ type: 'static_select' }, (payload, respond) => {
-      // Logs the contents of the action to the console
-      console.log('payload', payload);
-
-      // Send an additional message to the whole channel
-      // doWork()
-      //   .then(() => {
-      //     respond({ text: 'Thanks for your submission.' });
-      //   })
-      //   .catch((error) => {
-      //     respond({ text: 'Sorry, there\'s been an error. Try again later.' });
-      //   });
-
-      // If you'd like to replace the original message, use `chat.update`.
-      // Not returning any value.
+      console.log('new payload', payload);
     });
 
   } catch (error) {
@@ -107,6 +94,7 @@ slackEvents.on('app_mention', async (event) => {
   }
 });
 app.post("/callback", (req, res) => {
+  console.log({ body })
   res.json(req.body)
 })
 app.post("/slack/events", (req, res) => {
@@ -118,19 +106,8 @@ slackEvents.on('message.im', async (event) => {
 
 });
 
-
-// (async () => {
-//   const server = await slackInteractions.start(app.listen(port));
-//   // const server2 = await .start(port2);
-
-//   console.log(`Listening for events on ${server.address().port}`);
-//   // console.log(`Listening for interactive messages on ${server2.address().port}`);
-
-// })();
 const server = createServer(app);
-// createServer(slackInteractions.requestListener());
-// // createServer(slackEvents.requestListener())
+
 server.listen(port, () => {
-  // Log a message when the server is ready
   console.log(`Listening for events on ${server.address().port}`);
 });
