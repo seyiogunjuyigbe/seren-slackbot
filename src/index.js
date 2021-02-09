@@ -42,6 +42,7 @@ app.all("*", (req, res) => {
 // event listeners
 slackEvents.on('app_mention', async (event) => {
   console.log(`Received a mention event`);
+  console.log({ event })
   try {
     await web.chat.postMessage({
       channel: event.channel,
