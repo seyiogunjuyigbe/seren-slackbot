@@ -90,7 +90,7 @@ slackEvents.on('app_mention', async (event) => {
       ]
     });
     slackInteractions.action({ type: 'static_select' }, async (payload, respond) => {
-      console.log({ payload })
+      // console.log({ payload })
       try {
         let newResponse = await Response.create({
           username: payload.user.username,
@@ -99,35 +99,37 @@ slackEvents.on('app_mention', async (event) => {
         // await respond("Ok gotten")
         let result = await web.dialog.open({
           trigger_id: "qwertyuio",
-          title: "How are you feeling today?",
-          // callback_id: string;
-          elements:
-          {
-            "type": "static_select",
-            "options": [
-              {
-                "text": {
-                  "type": "plain_text",
-                  "text": "Doing Well"
+          dialog: {
+            title: "How are you feeling today?",
+            // callback_id: string;
+            elements:
+            {
+              "type": "static_select",
+              "options": [
+                {
+                  "text": {
+                    "type": "plain_text",
+                    "text": "Doing Well"
+                  },
+                  "value": "doing well"
                 },
-                "value": "doing well"
-              },
-              {
-                "text": {
-                  "type": "plain_text",
-                  "text": "Neutral"
+                {
+                  "text": {
+                    "type": "plain_text",
+                    "text": "Neutral"
+                  },
+                  "value": "neutral"
                 },
-                "value": "neutral"
-              },
-              {
-                "text": {
-                  "type": "plain_text",
-                  "text": "Feeling Lucky"
-                },
-                "value": "feeling lucky"
-              }
-            ]
-          }
+                {
+                  "text": {
+                    "type": "plain_text",
+                    "text": "Feeling Lucky"
+                  },
+                  "value": "feeling lucky"
+                }
+              ]
+            }
+          },
 
         })
         console.log({ result })
