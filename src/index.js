@@ -44,6 +44,7 @@ slackEvents.on('app_mention', async (event) => {
   console.log(`Received a mention event`);
   console.log({ event })
   try {
+
     await web.chat.postMessage({
       channel: event.channel,
       blocks: [
@@ -96,6 +97,40 @@ slackEvents.on('app_mention', async (event) => {
           how_are_you_doing: payload.actions[0].selected_option.value
         })
         await respond("Ok gotten")
+        let result = await web.dialog.open({
+          trigger_id: "qwertyuio",
+          title: "How are you feeling today?",
+          // callback_id: string;
+          elements:
+          {
+            "type": "static_select",
+            "options": [
+              {
+                "text": {
+                  "type": "plain_text",
+                  "text": "Doing Well"
+                },
+                "value": "doing well"
+              },
+              {
+                "text": {
+                  "type": "plain_text",
+                  "text": "Neutral"
+                },
+                "value": "neutral"
+              },
+              {
+                "text": {
+                  "type": "plain_text",
+                  "text": "Feeling Lucky"
+                },
+                "value": "feeling lucky"
+              }
+            ]
+          }
+
+        })
+        console.log({ result })
       } catch (err) {
         console.log({ err })
       }
