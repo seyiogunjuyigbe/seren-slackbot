@@ -58,6 +58,7 @@ slackEvents.on('app_mention', async (event) => {
         },
         {
           "type": "actions",
+          "block_id": "feelingBlock",
           "elements": [
             {
               "type": "static_select",
@@ -89,58 +90,194 @@ slackEvents.on('app_mention', async (event) => {
         }
       ]
     });
-    slackInteractions.action({ type: 'static_select' }, async (payload, respond) => {
-      // console.log({ payload })
-      try {
-        let newResponse = await Response.create({
-          username: payload.user.username,
-          how_are_you_doing: payload.actions[0].selected_option.value
-        })
-        // await respond("Ok gotten")
-        let result = await web.dialog.open({
-          trigger_id: "12345.98765.abcd2358fdea",
-          token: OAUTH_TOKEN,
-          dialog: {
-            "title": "How are you feeling today?",
-            // callback_id: string;
-            "elements":
-            {
-              "type": "static_select",
-              "options": [
-                {
-                  "text": {
-                    "type": "plain_text",
-                    "text": "Doing Well"
-                  },
-                  "value": "doing well"
-                },
-                {
-                  "text": {
-                    "type": "plain_text",
-                    "text": "Neutral"
-                  },
-                  "value": "neutral"
-                },
-                {
-                  "text": {
-                    "type": "plain_text",
-                    "text": "Feeling Lucky"
-                  },
-                  "value": "feeling lucky"
-                }
-              ]
-            }
-          },
 
-        })
-        console.log({ result })
+
+  } catch (error) {
+    console.log(error);
+  }
+});
+slackInteractions.action({ type: 'static_select', blockId: "feelingBlock" }, async (payload, respond) => {
+  // console.log({ payload })
+  try {
+    let newResponse = await Response.create({
+      username: payload.user.username,
+      how_are_you_doing: payload.actions[0].selected_option.value
+    })
+    await web.chat.postMessage({
+      channel: event.channel,
+      blocks: [
+        {
+          "type": "header",
+          "text": {
+            "type": "plain_text",
+            "text": "when are you free this week for a walk?",
+            "emoji": true
+          }
+        },
+        {
+          "type": "section",
+          "block_id": "timeSlot1",
+          "text": {
+            "type": "mrkdwn",
+            "text": "Time Slot 1"
+          },
+          "accessory": {
+            "type": "timepicker",
+            "initial_time": "12:00",
+            "placeholder": {
+              "type": "plain_text",
+              "text": "Select time",
+              "emoji": true
+            },
+            "action_id": "timepicker-action"
+          }
+        },
+        {
+          "type": "section",
+          "block_id": "timeSlot2",
+          "text": {
+            "type": "mrkdwn",
+            "text": "Time Slot 2"
+          },
+          "accessory": {
+            "type": "timepicker",
+            "initial_time": "12:00",
+            "placeholder": {
+              "type": "plain_text",
+              "text": "Select time",
+              "emoji": true
+            },
+            "action_id": "timepicker-action"
+          }
+        },
+        {
+          "type": "section",
+          "block_id": "datePicker",
+          "text": {
+            "type": "mrkdwn",
+            "text": "Pick a day."
+          },
+          "accessory": {
+            "type": "datepicker",
+            "initial_date": "1990-04-28",
+            "placeholder": {
+              "type": "plain_text",
+              "text": "Select a date",
+              "emoji": true
+            },
+            "action_id": "datepicker-action"
+          }
+        }
+      ]
+    })
+
+  } catch (err) {
+    console.log({ err })
+  }
+});
+slackInteractions.action({ type: 'static_select', blockId: "feelingBlock" }, async (payload, respond) => {
+  // console.log({ payload })
+  try {
+    let newResponse = await Response.create({
+      username: payload.user.username,
+      how_are_you_doing: payload.actions[0].selected_option.value
+    })
+    await web.chat.postMessage({
+      channel: event.channel,
+      blocks: [
+        {
+          "type": "header",
+          "text": {
+            "type": "plain_text",
+            "text": "when are you free this week for a walk?",
+            "emoji": true
+          }
+        },
+        {
+          "type": "section",
+          "block_id": "timeSlot1",
+          "text": {
+            "type": "mrkdwn",
+            "text": "Time Slot 1"
+          },
+          "accessory": {
+            "type": "timepicker",
+            "initial_time": "12:00",
+            "placeholder": {
+              "type": "plain_text",
+              "text": "Select time",
+              "emoji": true
+            },
+            "action_id": "timepicker-action"
+          }
+        },
+        {
+          "type": "section",
+          "block_id": "timeSlot2",
+          "text": {
+            "type": "mrkdwn",
+            "text": "Time Slot 2"
+          },
+          "accessory": {
+            "type": "timepicker",
+            "initial_time": "12:00",
+            "placeholder": {
+              "type": "plain_text",
+              "text": "Select time",
+              "emoji": true
+            },
+            "action_id": "timepicker-action"
+          }
+        },
+        {
+          "type": "section",
+          "block_id": "datePicker",
+          "text": {
+            "type": "mrkdwn",
+            "text": "Pick a day."
+          },
+          "accessory": {
+            "type": "datepicker",
+            "initial_date": "1990-04-28",
+            "placeholder": {
+              "type": "plain_text",
+              "text": "Select a date",
+              "emoji": true
+            },
+            "action_id": "datepicker-action"
+          }
+        }
+      ]
+    })
+    slackInteractions.action({ type: 'timepicker', blockId: "timeslot1" }, async (payload, respond) => {
+      console.log(payload.actions)
+      console.log(payload.actions[0] ? payload.actions[0] : null)
+      try {
+        newResponse.when_are_you_free_for_a_walk.times.addToSet("")
       } catch (err) {
         console.log({ err })
       }
     });
-
-  } catch (error) {
-    console.log(error);
+    slackInteractions.action({ type: 'timepicker', blockId: "timeslot2" }, async (payload, respond) => {
+      console.log(payload.actions)
+      console.log(payload.actions[0] ? payload.actions[0] : null)
+      try {
+        newResponse.when_are_you_free_for_a_walk.times.addToSet("")
+      } catch (err) {
+        console.log({ err })
+      }
+    });
+    slackInteractions.action({ type: 'datepicker', blockId: "datePicker" }, async (payload, respond) => {
+      console.log(payload.actions)
+      console.log(payload.actions[0] ? payload.actions[0] : null)
+      try {
+        newResponse.when_are_you_free_for_a_walk.times.addToSet("")
+      } catch (err) {
+        console.log({ err })
+      }
+    });
+  } catch (err) {
+    console.log({ err })
   }
 });
 
