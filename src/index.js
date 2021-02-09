@@ -119,18 +119,18 @@ slackEvents.on('message.im', async (event) => {
 });
 app.set('port', port);
 
-// (async () => {
-//   const server = await slackEvents.start(app.listen(port));
-//   const server2 = await slackInteractions.start(port2);
+(async () => {
+  const server = await slackInteractions.start(app.listen(port));
+  // const server2 = await .start(port2);
 
-//   console.log(`Listening for events on ${server.address().port}`);
-//   console.log(`Listening for interactive messages on ${server2.address().port}`);
-
-// })();
-const server = createServer(app);
-createServer(slackInteractions.requestListener());
-createServer(slackEvents.requestListener())
-server.listen(port, () => {
-  // Log a message when the server is ready
   console.log(`Listening for events on ${server.address().port}`);
-});
+  // console.log(`Listening for interactive messages on ${server2.address().port}`);
+
+})();
+// // const server = createServer(app);
+// createServer(slackInteractions.requestListener());
+// // createServer(slackEvents.requestListener())
+// server.listen(port, () => {
+//   // Log a message when the server is ready
+//   console.log(`Listening for events on ${server.address().port}`);
+// });
