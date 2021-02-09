@@ -88,13 +88,13 @@ slackEvents.on('app_mention', async (event) => {
       ]
     });
     slackInteractions.action({ type: 'static_select' }, async (payload, respond) => {
-      console.log({ payload, respond })
+      console.log({ payload })
       try {
         let newResponse = await Response.create({
           username: payload.user.username,
           how_are_you_doing: payload.actions[0].selected_option.value
         })
-        console.log({ newResponse })
+        await respond("Ok gotten")
       } catch (err) {
         console.log({ err })
       }
