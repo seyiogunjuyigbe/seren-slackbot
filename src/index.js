@@ -92,7 +92,7 @@ slackEvents.on('app_mention', async (event) => {
       try {
         let newResponse = await Response.create({
           username: payload.user.username,
-          how_are_you_doing: payload.actions[0].selected_option
+          how_are_you_doing: payload.actions[0].selected_option.value
         })
         console.log({ newResponse })
       } catch (err) {
