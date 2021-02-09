@@ -98,11 +98,12 @@ slackEvents.on('app_mention', async (event) => {
         })
         // await respond("Ok gotten")
         let result = await web.dialog.open({
-          trigger_id: "qwertyuio",
+          trigger_id: "12345.98765.abcd2358fdea",
+          token: OAUTH_TOKEN,
           dialog: {
-            title: "How are you feeling today?",
+            "title": "How are you feeling today?",
             // callback_id: string;
-            elements:
+            "elements":
             {
               "type": "static_select",
               "options": [
