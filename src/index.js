@@ -183,7 +183,7 @@ slackInteractions.action({ type: 'static_select', blockId: "feelingBlock" }, asy
       how_are_you_doing: payload.actions[0].selected_option.value
     })
     await web.chat.postMessage({
-      channel: event.channel,
+      channel: payload.channel.id,
       blocks: [
         {
           "type": "header",
