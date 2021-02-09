@@ -119,14 +119,14 @@ slackEvents.on('message.im', async (event) => {
 });
 
 
-(async () => {
-  const server = await slackInteractions.start(app.listen(port));
-  // const server2 = await .start(port2);
+// (async () => {
+//   const server = await slackInteractions.start(app.listen(port));
+//   // const server2 = await .start(port2);
 
-  console.log(`Listening for events on ${server.address().port}`);
-  // console.log(`Listening for interactive messages on ${server2.address().port}`);
+//   console.log(`Listening for events on ${server.address().port}`);
+//   // console.log(`Listening for interactive messages on ${server2.address().port}`);
 
-})();
+// })();
 const server = createServer(app);
 // createServer(slackInteractions.requestListener());
 // // createServer(slackEvents.requestListener())
